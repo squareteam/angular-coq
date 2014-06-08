@@ -1,6 +1,7 @@
 {
   "name": "angular-coq",
   "version": "0.0.0",
+  "main": "./dist/angular-coq.js",
   "dependencies": {
     "angular": "1.2.15",
     "json3": "~3.2.6",

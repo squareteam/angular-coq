@@ -27,12 +27,12 @@ module.exports = function (grunt) {
 
     bump: {
       options: {
-        files: ['package.json'],
+        files: ['package.json', 'bower.json'],
         updateConfigs: [],
         commit: true,
         push: true,
         commitMessage: 'Release v%VERSION%',
-        commitFiles: ['package.json'], // '-a' for all files
+        commitFiles: ['package.json', 'bower.json'], // '-a' for all files
         createTag: true,
         tagName: 'v%VERSION%',
         tagMessage: 'Version %VERSION%',
@@ -45,6 +45,11 @@ module.exports = function (grunt) {
     karma: {
       unit: {
         configFile: 'karma.conf.js',
+        singleRun: true
+      },
+
+      travis : {
+        configFile: 'karma-travis.conf.js',
         singleRun: true
       }
     }

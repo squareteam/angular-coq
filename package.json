@@ -16,12 +16,13 @@
     "karma-coverage": "~0.1",
     "grunt-bump": "0.0.13",
     "karma-story-reporter": "~0.2.2",
-    "karma-ng-html2js-preprocessor": "~0.1.0"
+    "karma-ng-html2js-preprocessor": "~0.1.0",
+    "karma-phantomjs-launcher" : "~0.1.4"
   },
   "engines": {
     "node": ">=0.10.0"
   },
   "scripts": {
-    "test": "grunt test"
+    "test": "grunt karma:travis"
   }
 }
