@@ -14,18 +14,17 @@ Angular models that make you say "cocoricoo"
 
 ```js
 
-function MyModel() {
-   this.resource = $resource('http://api.com/users/:id');
-   MyModel.superconstructor.call(this, arguments);
-}
-
-extend(CoqModel, MyModel);
+var MyModel = Coq.extend({
+   resource : $resource('http://api.com/users/:id')
+});
 
 // GET http://api.com/users/
 MyModel.find();
 
 // GET http://api.com/users/1
-MyModel.find(1);
+var record = MyModel.find(1);
+
+record.$delete();
 
 ```
 
@@ -33,30 +32,23 @@ MyModel.find(1);
 
 ```js
 
-function MyModel() {
-   this.resource = $resource('http://api.com/users/:id');
+var MyModel = Coq.extend({
+   resource : $resource('http://api.com/users/:id')
 
-   this.$beforeDestroy.push('removeFromTeam');
-   this.$afterSave.push('addToTeam');
+   addToTeam      : function() { return $q.resolve();  },
+   removeFromTeam : function($record) { return $q.reject('cannot delete from team'); }
+});
 
-   MyModel.superconstructor.call(this, arguments);
-}
-
-MyModel.prototype.addToTeam = function() {
-   // ... should return "thenable" object
-}
-
-MyModel.prototype.removeFromTeam = function($record) {
-   // ... should return "thenable" object
-}
-
-extend(CoqModel, MyModel);
-
-// GET http://api.com/users/
-MyModel.find();
+MyModel.$beforeSave('addToTeam');
+MyModel.$beforeDestroy('removeFromTeam');
 
 // GET http://api.com/users/1
-MyModel.find(1);
+var record = MyModel.find(1);
+
+// > 'cannot delete from team'
+record.$delete().then(function() {}, function(error) {
+   console.log(error);
+});
 
 ```
 
@@ -64,7 +56,6 @@ MyModel.find(1);
 - Form Building
 
 ```html
-
 <form coq-model="MyModel"></form>
 <!-- Inputs will be automatically added to form -->
 
