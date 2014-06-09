@@ -1,5 +1,16 @@
 {
   "name": "angular-coq",
+  "description" : "Angular models that will make you say \"cocoricoo\"",
+  "authors": [
+    "Charly Poly <cpoly55@gmail.com>"
+  ],
+  "homepage" : "http://squareteam.github.io/angular-coq",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:squareteam/angular-coq.git"
+  },
+  "licence" : "MIT",
+  "keywords" : ["angular", "model", "resource"],
   "version": "0.0.0",
   "main": "./dist/angular-coq.js",
   "dependencies": {
