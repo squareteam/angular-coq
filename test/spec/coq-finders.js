@@ -91,7 +91,7 @@ describe('Coq Finders', function() {
       });
     });
     
-    it('find a record should fail', function() {
+    it('find a record', function() {
 
       myModel.find(1).then(successCallback, errorCallback);
 
