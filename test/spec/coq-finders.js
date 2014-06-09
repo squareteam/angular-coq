@@ -15,7 +15,7 @@ describe('Coq Finders', function() {
   }));
 
   
-  var myModel, resourceMockSpy,
+  var myModel,
       errorCallback, successCallback;
 
   beforeEach(function() {
@@ -31,7 +31,9 @@ describe('Coq Finders', function() {
     beforeEach(function() {
       var successDeferred = function(cb) {
         cb();
-      },  resourceMock = function(params, cb, errb) {
+      },  resourceMock = {};
+
+      resourceMock.get = function(params, cb, errb) {
         return successDeferred(cb, errb);
       };
 
@@ -78,7 +80,9 @@ describe('Coq Finders', function() {
     beforeEach(function() {
       var errorDeferred = function(cb, errb) {
         errb();
-      }, resourceFailingMock = function(params, cb, errb) {
+      }, resourceFailingMock = {};
+
+      resourceFailingMock.get = function(params, cb, errb) {
         return errorDeferred(cb, errb);
       };
 
@@ -116,23 +120,25 @@ describe('Coq Finders', function() {
 
   describe('conditionsBuilder', function() {
 
+    var resourceMock;
+
     beforeEach(function() {
       var successDeferred = function(cb) {
         cb();
-      },  resourceMock = function(params, cb, errb) {
+      };
+
+      resourceMock = {};
+
+      resourceMock.get = function(params, cb, errb) {
         return successDeferred(cb, errb);
       };
 
-      resourceMockSpy = jasmine.createSpy('resourceMock', resourceMock);
+      resourceMock.query = successDeferred;
 
-      resourceMockSpy.and.callThrough();
-
-      resourceMockSpy.query = successDeferred;
-
-      resourceMockSpy.$$routeVariables = ['id'];
+      resourceMock.$$routeVariables = ['id'];
 
       myModel = Coq.factory({
-        $resource : resourceMockSpy,
+        $resource : resourceMock,
 
         $attributes : {
           id : {
@@ -145,11 +151,13 @@ describe('Coq Finders', function() {
    
     it('should interpolate resource route params if find() called with value', function() {
        
+      spyOn(resourceMock, 'get').and.callThrough();
+
       myModel.find(1).then(successCallback, errorCallback);
 
       $rootScope.$digest();
 
-      expect(resourceMockSpy.calls.argsFor(0)[0]).toEqual({ id : 1 });
+      expect(resourceMock.get.calls.argsFor(0)[0]).toEqual({ id : 1 });
 
     });
 

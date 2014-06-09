@@ -46,7 +46,9 @@ describe('Coq', function() {
           id    : 1,
           name  : 'charly'
         });
-      },  resourceMock = function(params, cb, errb) {
+      },  resourceMock = {};
+
+      resourceMock.get = function(params, cb, errb) {
         return successDeferred(cb, errb);
       };
 
