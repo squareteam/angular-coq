@@ -13,60 +13,91 @@ Angular models that make you say "cocoricoo"
 </table>
 
 
-
-### Expected Features (in development)
+#### The good parts
 
 - Working on top of ngResource
+- Simple API
 
-
-##### Finders
+##### Examples
 
 ```js
 
-var MyModel = Coq.extend({
-   resource : $resource('http://api.com/users/:id')
+var Users = Coq.extend({
+   $resource   : $resource('http://api.com/users/:id', {}, { update : { method : 'PUT' } }),
+   $attributes : {
+      id    : 'number',
+      name  : 'text'
+   },
+   
+   // custom instance method
+   update : function () {
+      return this.constructor.$resource.update(this.$attributes).$promise;
+   }
 });
 
 // GET http://api.com/users/
-MyModel.all();
+Users.all();
 
 // GET http://api.com/users/1
-var record = MyModel.find({ id : 1 });
-
-// DELETE http://api.com/users/1
-record.delete();
-
-```
-
-##### Callbacks
-
-```js
-
-var MyModel = Coq.extend({
-   resource : $resource('http://api.com/users/:id')
-
-   addToTeam      : function() { return $q.resolve();  },
-   removeFromTeam : function($record) { return $q.reject('cannot delete from team'); }
+Users.find({ id : 1 }).then(function(user) {
+   // PUT http://api.com/users/1
+   user.update();
+   
+   // DELETE http://api.com/users/1
+   user.destroy();
 });
 
-MyModel.$beforeSave('addToTeam');
-MyModel.$beforeDestroy('removeFromTeam');
+
+
+// #### Using callbacks
+
+var Teams = Coq.extend({
+   resource : $resource('http://api.com/teams/:id')
+
+   doSomething       : function() { return $q.resolve();  },
+   doSomethingElse   : function($record) { return $q.reject('cannot delete from team'); }
+});
+
+Teams.$beforeSave('doSomething');
+Teams.$beforeDestroy('doSomethingElse');
 
 // GET http://api.com/users/1
-var record = MyModel.find(1);
+Teams.find({ id : 1 }).then(function(team) {
+   // > 'cannot delete from team'
+   team.destroy().then(function() {}, function(error) {
+      console.log(error);
+   });
 
-// > 'cannot delete from team'
-record.$delete().then(function() {}, function(error) {
-   console.log(error);
 });
-
 ```
 
 
 ##### Form Scaffolding
 
-```html
-<form coq-model="MyModel"></form>
-<!-- Inputs will be automatically added to form -->
+*myController.js*
+```js
+app.controller('myController', function($scope, TeamsModel) {
+   $scope.team = TeamsModel.find(1);
+});
+```
 
+*index.html*
+```html
+<div ng-controller="myController">
+   <form coq-model="team">
+      <!-- Inputs will be automatically added to form -->
+   </form>
+</div>
+```
+
+*rendered html (before linking ngForm directive)*
+```
+<div ng-controller="myController">
+   <form coq-model="team" ng-submit="team.update()">
+      <!-- ... -->
+      <input type="number" name="id" ng-model="team.id">
+      <!-- ... -->
+      <input type="text" name="name" ng-model="team.name">
+   </form>
+</div>
 ```
