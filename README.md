@@ -1,4 +1,4 @@
-angular-coq [![Build Status](https://travis-ci.org/squareteam/angular-coq.svg?branch=master)](https://travis-ci.org/squareteam/angular-coq)
+angular-coq [![Build Status](https://travis-ci.org/squareteam/angular-coq.svg?branch=master)](https://travis-ci.org/squareteam/angular-coq) [![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
 ===========
 
 <table>
