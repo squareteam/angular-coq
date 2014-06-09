@@ -1,7 +1,16 @@
 angular-coq [![Build Status](https://travis-ci.org/squareteam/angular-coq.svg)](https://travis-ci.org/squareteam/angular-coq)
 ===========
 
+<table>
+<tr>
+<td>
+<img src="http://www.coloriages.fr/coloriages/coloriage-looney-toons-charlie-le-coq.jpg" width="250">
+</td>
+<td>
 Angular models that make you say "cocoricoo"
+</td>
+</tr>
+</table>
 
 
 
