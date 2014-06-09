@@ -25,6 +25,7 @@ module.exports = function (grunt) {
       dist: 'dist'
     },
 
+    // Release settings
     bump: {
       options: {
         files: ['package.json', 'bower.json'],
@@ -41,6 +42,7 @@ module.exports = function (grunt) {
       }
     },
 
+    // Build settings
     clean : {
       dist : ['.tmp', 'dist']
     },
@@ -74,10 +76,31 @@ module.exports = function (grunt) {
     },
 
     // Test settings
+    watch: {
+      jsTest: {
+        files: ['test/spec/{,**/}*.js'],
+        tasks: ['newer:jshint:test', 'karma']
+      }
+    },
+
     karma: {
       unit: {
         configFile: 'karma.conf.js',
         singleRun: true
+      }
+    },
+
+    // Make sure code styles are up to par and there are no obvious mistakes
+    jshint: {
+      options: {
+        jshintrc: '.jshintrc',
+        reporter: require('jshint-stylish')
+      },
+      test: {
+        options: {
+          jshintrc: 'test/.jshintrc'
+        },
+        src: ['test/spec/{,**/}*.js']
       }
     }
   });
