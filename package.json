@@ -1,5 +1,8 @@
 {
   "name": "angularcoq",
+    "authors": [
+    "Charly Poly <cpoly55@gmail.com>"
+  ],
   "version": "0.0.0",
   "dependencies": {},
   "devDependencies": {
@@ -23,6 +26,6 @@
     "node": ">=0.10.0"
   },
   "scripts": {
-    "test": "grunt karma:travis"
+    "test": "grunt test"
   }
 }

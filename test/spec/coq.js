@@ -38,114 +38,64 @@ describe('Coq', function() {
       }).toThrow(new Error('model declaration : resource object invalid'));
     });
 
-  });
+    it('should add custom instance methods to model with correct binding', function() {
+      var myModel;
 
-  describe('Finders', function() {
-    
-    var myModel, resourceMockSpy,
-        errorCallback, successCallback;
+      var successDeferred = function(cb) {
+        cb({
+          id    : 1,
+          name  : 'charly'
+        });
+      },  resourceMock = function(params, cb, errb) {
+        return successDeferred(cb, errb);
+      };
 
-    beforeEach(function() {
+      resourceMock.$$routeVariables = [];
 
-      errorCallback   = jasmine.createSpy('error');
-      successCallback = jasmine.createSpy('success');
+      myModel = Coq.factory({
+        $resource : resourceMock,
 
-    });
-
-    describe('should succeed to', function() {
-
-
-      beforeEach(function() {
-        var successDeferred = function(cb) {
-          cb();
-        },
-            resourceMock = function(params, cb, errb) {
-          return successDeferred(cb, errb);
-        };
-
-        resourceMockSpy = jasmine.createSpy('resourceMock', resourceMock);
-        resourceMockSpy.and.callThrough();
-
-        resourceMockSpy.query = successDeferred;
-
-        resourceMockSpy.$$routeVariables = ['id'];
-
-        myModel = Coq.factory({
-          $resource : resourceMockSpy,
-
-          $attributes : {
-            id : {
-              type : 'number'
-            }
+        $attributes : {
+          id : {
+            type : 'number'
+          },
+          name : {
+            type : 'text'
           }
-        });
-      });
-      
-      it('find a record', function() {
+        },
 
-        myModel.find(1).then(successCallback, errorCallback);
+        myMethod : function() {
+          return 'hello';
+        },
 
-        $rootScope.$digest();
-
-        expect(resourceMockSpy.calls.argsFor(0)[0]).toEqual({ id : 1 });
-
+        helloMan : function() {
+          return 'hello ' + this.$attributes.name;
+        }
       });
 
-      it('find all records', function() {
-
-        myModel.all().then(successCallback, errorCallback);
-
-        $rootScope.$digest();
-
+      myModel.find(1).then(function(charly) {
+        expect(charly.myMethod instanceof Function).toBe(true);
+        expect(charly.myMethod()).toBe('hello');
+        expect(charly.helloMan()).toBe('hello charly');
       });
 
-      afterEach(function() {
-        expect(errorCallback.calls.any()).toEqual(false);
-        expect(successCallback.calls.count()).toEqual(1);
-      });
-
+      $rootScope.$digest();
     });
 
-    describe('should fail to', function() {
+    it('should add statics methods to model', function() {
+      var myModel = Coq.factory({
+        $resource : $resource('http://example.com/users'),
 
-      beforeEach(function() {
-        var errorDeferred = function(cb, errb) {
-          errb();
-        }, resourceFailingMock = function(params, cb, errb) {
-          return errorDeferred(cb, errb);
-        };
-
-        resourceFailingMock.query = errorDeferred;
-
-        resourceFailingMock.$$routeVariables = ['id'];
-
-        myModel = Coq.factory({
-          $resource : resourceFailingMock
-        });
-      });
-      
-      it('find a record should fail', function() {
-
-        myModel.find(1).then(successCallback, errorCallback);
-
-        $rootScope.$digest();
-
+        $statics : {
+          myMethod : function() {
+            return 'hello';
+          }
+        }
       });
 
-      it('find all records', function() {
-
-        myModel.all().then(successCallback, errorCallback);
-
-        $rootScope.$digest();
-
-      });
-
-      afterEach(function() {
-        expect(successCallback.calls.any()).toEqual(false);
-        expect(errorCallback.calls.count()).toEqual(1);
-      });
-
+      expect(typeof myModel.myMethod).toBe('function');
     });
 
   });
+
 });
