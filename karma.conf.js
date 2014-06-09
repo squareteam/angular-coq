@@ -12,9 +12,14 @@ module.exports = function(config) {
     // coverage reporter generates the coverage
     reporters: ['coverage', 'story'],
 
+    preprocessors: {
+      'lib/*.js' : ['coverage'],
+      'lib/**/*.js' : ['coverage'],
+    },
+
     // optionally, configure the reporter
     coverageReporter: {
-      type : 'html',
+      type : 'text',
       dir : 'coverage/'
     },
 
