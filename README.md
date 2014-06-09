@@ -91,7 +91,7 @@ app.controller('myController', function($scope, TeamsModel) {
 ```
 
 *rendered html (before linking ngForm directive)*
-```
+```html
 <div ng-controller="myController">
    <form coq-model="team" ng-submit="team.update()">
       <!-- ... -->
