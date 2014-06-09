@@ -21,7 +21,7 @@ module.exports = function (grunt) {
     // Project settings
     yeoman: {
       // configurable paths
-      app: require('./bower.json').appPath || 'app',
+      lib: require('./bower.json').appPath || 'lib',
       dist: 'dist'
     },
 
@@ -41,6 +41,38 @@ module.exports = function (grunt) {
       }
     },
 
+    clean : {
+      dist : ['.tmp', 'dist']
+    },
+
+    concat : {
+      dist : {
+        src: ['<%= yeoman.lib %>/module.js', '<%= yeoman.lib %>/model.js'],
+        dest: '.tmp/angular-coq.js',
+      }
+    },
+
+    ngmin: {
+      dist: {
+        files: [{
+          expand: true,
+          cwd: '.tmp/',
+          src: '*.js',
+          dest: '<%= yeoman.dist %>'
+        }]
+      }
+    },
+
+    uglify: {
+      dist: {
+        files: {
+          '<%= yeoman.dist %>/angular-coq.min.js': [
+            '<%= yeoman.dist %>/angular-coq.js'
+          ]
+        }
+      }
+    },
+
     // Test settings
     karma: {
       unit: {
@@ -52,8 +84,14 @@ module.exports = function (grunt) {
 
 
   grunt.registerTask('test', [
-    // 'connect:test',
     'karma'
+  ]);
+
+  grunt.registerTask('build', [
+    'clean:dist',
+    'concat:dist',
+    'ngmin:dist',
+    'uglify:dist'
   ]);
 
 };

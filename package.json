@@ -1,6 +1,6 @@
 {
   "name": "angularcoq",
-    "authors": [
+  "authors": [
     "Charly Poly <cpoly55@gmail.com>"
   ],
   "version": "0.0.1",
@@ -19,8 +19,11 @@
     "karma-coverage": "~0.1",
     "grunt-bump": "0.0.13",
     "karma-story-reporter": "~0.2.2",
-    "karma-ng-html2js-preprocessor": "~0.1.0",
-    "karma-phantomjs-launcher" : "~0.1.4"
+    "karma-phantomjs-launcher": "~0.1.4",
+    "grunt-contrib-concat": "~0.4.0",
+    "grunt-contrib-uglify": "~0.4.0",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-ngmin": "0.0.3"
   },
   "engines": {
     "node": ">=0.10.0"
