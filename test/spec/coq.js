@@ -38,6 +38,64 @@ describe('Coq', function() {
       }).toThrow(new Error('model declaration : resource object invalid'));
     });
 
+    it('should add custom instance methods to model with correct binding', function() {
+      var myModel;
+
+      var successDeferred = function(cb) {
+        cb({
+          id    : 1,
+          name  : 'charly'
+        });
+      },  resourceMock = function(params, cb, errb) {
+        return successDeferred(cb, errb);
+      };
+
+      resourceMock.$$routeVariables = [];
+
+      myModel = Coq.factory({
+        $resource : resourceMock,
+
+        $attributes : {
+          id : {
+            type : 'number'
+          },
+          name : {
+            type : 'text'
+          }
+        },
+
+        myMethod : function() {
+          return 'hello';
+        },
+
+        helloMan : function() {
+          return 'hello ' + this.$attributes.name;
+        }
+      });
+
+      myModel.find(1).then(function(charly) {
+        expect(charly.myMethod instanceof Function).toBe(true);
+        expect(charly.myMethod()).toBe('hello');
+        expect(charly.helloMan()).toBe('hello charly');
+      });
+
+      $rootScope.$digest();
+    });
+
+    it('should add statics methods to model', function() {
+      var myModel = Coq.factory({
+        $resource : $resource('http://example.com/users'),
+
+        $statics : {
+          myMethod : function() {
+            return 'hello';
+          }
+        }
+      });
+
+      expect(typeof myModel.myMethod).toBe('function');
+    });
+
   });
 
 });
