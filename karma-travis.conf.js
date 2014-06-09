@@ -24,6 +24,8 @@ module.exports = function(config) {
       'bower_components/angular-mocks/angular-mocks.js',
       'bower_components/angular-resource/angular-resource.js',
       'bower_components/angular-sanitize/angular-sanitize.js',
+      'bower_components/extend/dist/extend.js',
+      'lib/module.js',
       'lib/*.js',
       'lib/**/*.js',
       'test/mock/**/*.js',
