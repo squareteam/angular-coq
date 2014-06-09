@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Angular-coq by squareteam</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/main.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+
+      <header>
+        <h1>Angular-coq</h1>
+        <p>Angular models that will make you say &quot;cocoricoo&quot;</p>
+      </header>
+
+      <div id="banner">
+        <span id="logo"></span>
+
+        <a href="https://github.com/squareteam/angular-coq" class="button fork"><strong>View On GitHub</strong></a>
+        <div class="downloads">
+          <span>Downloads:</span>
+          <ul>
+            <li><a href="https://github.com/squareteam/angular-coq/zipball/master" class="button">ZIP</a></li>
+            <li><a href="https://github.com/squareteam/angular-coq/tarball/master" class="button">TAR</a></li>
+          </ul>
+        </div>
+      </div><!-- end banner -->
+
+    <div class="wrapper">
+      <nav>
+        <ul></ul>
+      </nav>
+      <section>
+        <h1>
+<a name="angular-coq-" class="anchor" href="#angular-coq-"><span class="octicon octicon-link"></span></a>angular-coq <a href="https://travis-ci.org/squareteam/angular-coq"><img src="https://travis-ci.org/squareteam/angular-coq.svg?branch=master" alt="Build Status"></a>
+</h1>
+
+<p>Angular models that make you say "cocoricoo"</p>
+
+<h3>
+<a name="expected-features-in-development" class="anchor" href="#expected-features-in-development"><span class="octicon octicon-link"></span></a>Expected Features (in development)</h3>
+
+<ul>
+<li>Working on top of ngResource</li>
+</ul><h5>
+<a name="finders" class="anchor" href="#finders"><span class="octicon octicon-link"></span></a>Finders</h5>
+
+<div class="highlight highlight-js"><pre>
+<span class="kd">var</span> <span class="nx">MyModel</span> <span class="o">=</span> <span class="nx">Coq</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+   <span class="nx">resource</span> <span class="o">:</span> <span class="nx">$resource</span><span class="p">(</span><span class="s1">'http://api.com/users/:id'</span><span class="p">)</span>
+<span class="p">});</span>
+
+<span class="c1">// GET http://api.com/users/</span>
+<span class="nx">MyModel</span><span class="p">.</span><span class="nx">all</span><span class="p">();</span>
+
+<span class="c1">// GET http://api.com/users/1</span>
+<span class="kd">var</span> <span class="nx">record</span> <span class="o">=</span> <span class="nx">MyModel</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="nx">id</span> <span class="o">:</span> <span class="mi">1</span> <span class="p">});</span>
+
+<span class="c1">// DELETE http://api.com/users/1</span>
+<span class="nx">record</span><span class="p">.</span><span class="k">delete</span><span class="p">();</span>
+
+</pre></div>
+
+<h5>
+<a name="callbacks" class="anchor" href="#callbacks"><span class="octicon octicon-link"></span></a>Callbacks</h5>
+
+<div class="highlight highlight-js"><pre>
+<span class="kd">var</span> <span class="nx">MyModel</span> <span class="o">=</span> <span class="nx">Coq</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+   <span class="nx">resource</span> <span class="o">:</span> <span class="nx">$resource</span><span class="p">(</span><span class="s1">'http://api.com/users/:id'</span><span class="p">)</span>
+
+   <span class="nx">addToTeam</span>      <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">$q</span><span class="p">.</span><span class="nx">resolve</span><span class="p">();</span>  <span class="p">},</span>
+   <span class="nx">removeFromTeam</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$record</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">$q</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="s1">'cannot delete from team'</span><span class="p">);</span> <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="nx">MyModel</span><span class="p">.</span><span class="nx">$beforeSave</span><span class="p">(</span><span class="s1">'addToTeam'</span><span class="p">);</span>
+<span class="nx">MyModel</span><span class="p">.</span><span class="nx">$beforeDestroy</span><span class="p">(</span><span class="s1">'removeFromTeam'</span><span class="p">);</span>
+
+<span class="c1">// GET http://api.com/users/1</span>
+<span class="kd">var</span> <span class="nx">record</span> <span class="o">=</span> <span class="nx">MyModel</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+
+<span class="c1">// &gt; 'cannot delete from team'</span>
+<span class="nx">record</span><span class="p">.</span><span class="nx">$delete</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+   <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+<span class="p">});</span>
+
+</pre></div>
+
+<h5>
+<a name="form-scaffolding" class="anchor" href="#form-scaffolding"><span class="octicon octicon-link"></span></a>Form Scaffolding</h5>
+
+<div class="highlight highlight-html"><pre><span class="nt">&lt;form</span> <span class="na">coq-model=</span><span class="s">"MyModel"</span><span class="nt">&gt;&lt;/form&gt;</span>
+<span class="c">&lt;!-- Inputs will be automatically added to form --&gt;</span>
+
+</pre></div>
+      </section>
+      <footer>
+        <p>Project maintained by <a href="https://github.com/squareteam">squareteam</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
