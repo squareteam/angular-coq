@@ -23,6 +23,6 @@
     "node": ">=0.10.0"
   },
   "scripts": {
-    "test": "grunt karma:travis"
+    "test": "grunt test"
   }
 }
