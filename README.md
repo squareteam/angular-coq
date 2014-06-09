@@ -1,16 +1,16 @@
-angular-coq [![Build Status](https://travis-ci.org/squareteam/angular-coq.svg)](https://travis-ci.org/squareteam/angular-coq)
+angular-coq [![Build Status](https://travis-ci.org/squareteam/angular-coq.svg?branch=master)](https://travis-ci.org/squareteam/angular-coq)
 ===========
 
 Angular models that make you say "cocoricoo"
 
 
 
-
-
-
 ### Expected Features (in development)
 
-- Working with ngResource
+- Working on top of ngResource
+
+
+##### Finders
 
 ```js
 
@@ -19,16 +19,17 @@ var MyModel = Coq.extend({
 });
 
 // GET http://api.com/users/
-MyModel.find();
+MyModel.all();
 
 // GET http://api.com/users/1
-var record = MyModel.find(1);
+var record = MyModel.find({ id : 1 });
 
-record.$delete();
+// DELETE http://api.com/users/1
+record.delete();
 
 ```
 
-- Callbacks
+##### Callbacks
 
 ```js
 
@@ -53,7 +54,7 @@ record.$delete().then(function() {}, function(error) {
 ```
 
 
-- Form Building
+##### Form Scaffolding
 
 ```html
 <form coq-model="MyModel"></form>
