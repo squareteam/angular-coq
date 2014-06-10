@@ -42,25 +42,8 @@ angular.module('coq').directive('CoqModel', function () {
 angular.module('coq').provider('Coq', function () {
   // Used to generate params to pass to $resource instance when
   // trying to load a record via `find()`
-  function conditionBuilder(queryObject, ModelClass) {
-    if (!angular.isObject(queryObject) && ModelClass.$resource.$$routeVariables.length === 1) {
-      var attribute = false, query = {};
-      angular.forEach(ModelClass.$resource.$$routeVariables, function (variableName) {
-        angular.forEach(ModelClass.$attributesDefinition, function (_, attrName) {
-          if (variableName === attrName) {
-            attribute = attrName;
-          }
-        });
-      });
-      if (attribute) {
-        query[attribute] = queryObject;
-        return query;
-      } else {
-        return queryObject;
-      }
-    } else {
-      return queryObject;
-    }
+  function conditionBuilder(queryObject) {
+    return queryObject;
   }
   // $conditionBuilder is customizable
   this.$conditionBuilder = conditionBuilder;
@@ -73,7 +56,8 @@ angular.module('coq').provider('Coq', function () {
     function ($q) {
       var IGNORE_CONFIG_KEYS = [
           '$attributes',
-          '$statics'
+          '$statics',
+          '$primaryKey'
         ], RESERVED_STATICS = [
           'find',
           'all'
@@ -84,7 +68,6 @@ angular.module('coq').provider('Coq', function () {
         if (angular.isObject(attributes)) {
           angular.forEach(attributes, function (value, key) {
             if (!angular.isFunction(value) && key[0] !== '$' && Object.keys(this.constructor.$attributesDefinition).indexOf(key) !== -1) {
-              console.log('add', key, value);
               this[key] = value;
             }
           }, this);
@@ -114,21 +97,39 @@ angular.module('coq').provider('Coq', function () {
       ////////////////////////////
       // Finder methods helpers //
       ////////////////////////////
-      // Add `find()` and `all()` methods to `ModelClass`
+      // Add `find()`, `all()` and `where()` methods to `ModelClass`
       function addFinders(ModelClass, resource) {
-        ModelClass.find = function CoqFinder(queryObject) {
-          var defer = $q.defer();
-          queryObject = self.$conditionBuilder(queryObject, ModelClass);
-          resource.get(queryObject, function (resourceInstance) {
-            var model = new ModelClass(resourceInstance);
-            model.$resource = resource;
-            defer.resolve(model);
-          }, defer.reject);
+        ModelClass.find = function CoqFinder(value) {
+          var defer = $q.defer(), query = {};
+          if (!ModelClass.$primaryKey && ModelClass.$resource.$$routeVariables.length === 1) {
+            var attribute = false;
+            angular.forEach(ModelClass.$resource.$$routeVariables, function (variableName) {
+              angular.forEach(ModelClass.$attributesDefinition, function (_, attrName) {
+                if (variableName === attrName) {
+                  attribute = attrName;
+                }
+              });
+            });
+            if (attribute) {
+              query[attribute] = value;
+            }
+          } else if (ModelClass.$primaryKey) {
+            query[ModelClass.$primaryKey] = value;
+          }
+          if (Object.keys(query).length) {
+            resource.get(query, function (resourceInstance) {
+              var model = new ModelClass(resourceInstance);
+              model.$resource = resource;
+              defer.resolve(model);
+            }, defer.reject);
+          } else {
+            defer.reject(new Error('unable to locate primary key'));
+          }
           return defer.promise;
         };
-        ModelClass.all = function () {
+        ModelClass.where = function (queryObject) {
           var defer = $q.defer();
-          resource.query(function (resourceInstances) {
+          resource.query(queryObject, function (resourceInstances) {
             var modelInstances = [];
             angular.forEach(resourceInstances, function (resourceInstance) {
               var model = new ModelClass(resourceInstance);
@@ -138,6 +139,9 @@ angular.module('coq').provider('Coq', function () {
             defer.resolve(modelInstances);
           }, defer.reject);
           return defer.promise;
+        };
+        ModelClass.all = function () {
+          return ModelClass.where({});
         };
       }
       ///////////////////////
@@ -176,6 +180,13 @@ angular.module('coq').provider('Coq', function () {
         ModelClass.$resource = config.$resource;
         addFinders(ModelClass, ModelClass.$resource);
         ModelClass.$attributesDefinition = config.$attributes || {};
+        if (config.$primaryKey) {
+          if (Object.keys(ModelClass.$attributesDefinition).indexOf(config.$primaryKey) !== -1) {
+            ModelClass.$primaryKey = config.$primaryKey;
+          } else {
+            throw new Error('$primaryKey "' + config.$primaryKey + '" not in $attributes');
+          }
+        }
         return ModelClass;
       }
       return { factory: CoqModelFactory };
