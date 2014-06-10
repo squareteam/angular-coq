@@ -15,6 +15,8 @@ module.exports = function (grunt) {
   // Time how long tasks take. Can help when optimizing build times
   require('time-grunt')(grunt);
 
+  grunt.loadNpmTasks('grunt-karma-coveralls');
+
   // Define the configuration for all the tasks
   grunt.initConfig({
 
@@ -39,6 +41,16 @@ module.exports = function (grunt) {
         tagMessage: 'Version %VERSION%',
         pushTo: 'origin'
         // gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d' // options to use with '$ git describe'
+      }
+    },
+
+    coveralls: {
+      options: {
+        debug: false,
+        'coverage_dir': 'coverage/',
+        dryRun: false,
+        force: true,
+        recursive: true
       }
     },
 
@@ -107,7 +119,8 @@ module.exports = function (grunt) {
 
 
   grunt.registerTask('test', [
-    'karma'
+    'karma',
+    'coveralls'
   ]);
 
   grunt.registerTask('build', [
