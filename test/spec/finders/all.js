@@ -2,10 +2,12 @@
 
 'use strict';
 
-describe('Coq Finders', function() {
+describe('CoqModelClass.all', function() {
 
   var Coq,
-      $resource, $rootScope;
+      $resource, $rootScope,
+      myModel,
+      errorCallback, successCallback;
 
   beforeEach(module('coq'));
 
@@ -14,18 +16,10 @@ describe('Coq Finders', function() {
     
     $resource   = $injector.get('$resource');
     $rootScope  = $injector.get('$rootScope');
-  }));
-
-  
-  var myModel,
-      errorCallback, successCallback;
-
-  beforeEach(function() {
 
     errorCallback   = jasmine.createSpy('error');
     successCallback = jasmine.createSpy('success');
-
-  });
+  }));
 
   describe('should succeed to', function() {
 
@@ -45,14 +39,6 @@ describe('Coq Finders', function() {
         }
       });
     });
-    
-    it('find a record', function() {
-
-      myModel.find(1).then(successCallback, errorCallback);
-
-      $rootScope.$digest();
-
-    });
 
     it('find all records', function() {
 
@@ -60,9 +46,7 @@ describe('Coq Finders', function() {
 
       $rootScope.$digest();
 
-    });
 
-    afterEach(function() {
       expect(errorCallback.calls.any()).toEqual(false);
       expect(successCallback.calls.count()).toEqual(1);
     });
@@ -80,14 +64,6 @@ describe('Coq Finders', function() {
         $resource : resourceMock
       });
     });
-    
-    it('find a record', function() {
-
-      myModel.find(1).then(successCallback, errorCallback);
-
-      $rootScope.$digest();
-
-    });
 
     it('find all records', function() {
 
@@ -95,48 +71,8 @@ describe('Coq Finders', function() {
 
       $rootScope.$digest();
 
-    });
-
-    afterEach(function() {
       expect(successCallback.calls.any()).toEqual(false);
       expect(errorCallback.calls.count()).toEqual(1);
-    });
-
-  });
-
-  describe('conditionsBuilder', function() {
-
-    var resourceMock;
-
-    beforeEach(function() {
-      resourceMock = getResourceMock();
-
-      resourceMock.shouldSucceed();
-
-      resourceMock.$$routeVariables = ['id'];
-
-      myModel = Coq.factory({
-        $resource : resourceMock,
-
-        $attributes : {
-          id : {
-            type : 'number'
-          }
-        }
-      });
-    });
-    
-   
-    it('should interpolate resource route params if find() called with value', function() {
-       
-      spyOn(resourceMock, 'get').and.callThrough();
-
-      myModel.find(1).then(successCallback, errorCallback);
-
-      $rootScope.$digest();
-
-      expect(resourceMock.get.calls.argsFor(0)[0]).toEqual({ id : 1 });
-
     });
 
   });
