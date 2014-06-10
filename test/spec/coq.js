@@ -39,6 +39,15 @@ describe('Coq', function() {
       }).toThrow(new Error('model declaration : resource object invalid'));
     });
 
+    it('should throw if given $primaryKey is not in $attributes', function() {
+      expect(function() {
+        Coq.factory({
+          $resource : getResourceMock(),
+          $primaryKey : 'id'
+        });
+      }).toThrow(new Error('$primaryKey "id" not in $attributes'));
+    });
+
     it('should add custom instance methods to model with correct binding', function() {
       var myModel;
 
@@ -97,48 +106,6 @@ describe('Coq', function() {
       });
 
       expect(typeof myModel.myMethod).toBe('function');
-    });
-
-  });
-
-  
-  describe('$conditionsBuilder', function() {
-
-    var resourceMock, myModel, errorCallback, successCallback;
-
-    beforeEach(function() {
-      resourceMock = getResourceMock();
-
-      resourceMock.shouldSucceed();
-
-      resourceMock.$$routeVariables = ['id'];
-
-      myModel = Coq.factory({
-        $resource : resourceMock,
-
-        $attributes : {
-          id : {
-            type : 'number'
-          }
-        }
-      });
-
-      errorCallback   = jasmine.createSpy('error');
-      successCallback = jasmine.createSpy('success');
-
-    });
-    
-   
-    it('should interpolate resource route params if find() called with value', function() {
-       
-      spyOn(resourceMock, 'get').and.callThrough();
-
-      myModel.find(1).then(successCallback, errorCallback);
-
-      $rootScope.$digest();
-
-      expect(resourceMock.get.calls.argsFor(0)[0]).toEqual({ id : 1 });
-
     });
 
   });
