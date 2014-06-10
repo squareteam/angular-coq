@@ -16,7 +16,7 @@ Angular models that make you say "cocoricoo"
 #### The good parts
 
 - Working on top of ngResource
-- Simple API
+- Simple API ( [see doc](https://github.com/squareteam/angular-coq/wiki/Coq-API) )
 
 ##### Examples
 
