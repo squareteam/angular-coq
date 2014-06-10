@@ -1,3 +1,5 @@
+/* global getResourceMock */
+
 'use strict';
 
 describe('Coq Finders', function() {
@@ -29,17 +31,9 @@ describe('Coq Finders', function() {
 
 
     beforeEach(function() {
-      var successDeferred = function(cb) {
-        cb();
-      },  resourceMock = {};
+      var resourceMock = getResourceMock();
 
-      resourceMock.get = function(params, cb, errb) {
-        return successDeferred(cb, errb);
-      };
-
-      resourceMock.query = successDeferred;
-
-      resourceMock.$$routeVariables = ['id'];
+      resourceMock.shouldSucceed();
 
       myModel = Coq.factory({
         $resource : resourceMock,
@@ -78,20 +72,12 @@ describe('Coq Finders', function() {
   describe('should fail to', function() {
 
     beforeEach(function() {
-      var errorDeferred = function(cb, errb) {
-        errb();
-      }, resourceFailingMock = {};
+      var resourceMock = getResourceMock();
 
-      resourceFailingMock.get = function(params, cb, errb) {
-        return errorDeferred(cb, errb);
-      };
-
-      resourceFailingMock.query = errorDeferred;
-
-      resourceFailingMock.$$routeVariables = ['id'];
+      resourceMock.shouldFail();
 
       myModel = Coq.factory({
-        $resource : resourceFailingMock
+        $resource : resourceMock
       });
     });
     
@@ -123,17 +109,9 @@ describe('Coq Finders', function() {
     var resourceMock;
 
     beforeEach(function() {
-      var successDeferred = function(cb) {
-        cb();
-      };
+      resourceMock = getResourceMock();
 
-      resourceMock = {};
-
-      resourceMock.get = function(params, cb, errb) {
-        return successDeferred(cb, errb);
-      };
-
-      resourceMock.query = successDeferred;
+      resourceMock.shouldSucceed();
 
       resourceMock.$$routeVariables = ['id'];
 

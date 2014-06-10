@@ -32,6 +32,7 @@ module.exports = function(config) {
       'lib/module.js',
       'lib/*.js',
       'lib/**/*.js',
+      'test/resource-mock.js',
       'test/mock/**/*.js',
       'test/spec/**/*.js'
     ],
