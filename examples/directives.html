@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <title>Angular Coq - Basic model</title>
+   <script type="text/javascript" src="../bower_components/jquery/dist/jquery.js"></script>
+   <script type="text/javascript" src="../bower_components/angular/angular.js"></script>
+   <script type="text/javascript" src="../bower_components/angular-resource/angular-resource.js"></script>
+   <script type="text/javascript" src="../bower_components/angular-sanitize/angular-sanitize.js"></script>
+   <script type="text/javascript" src="../bower_components/extend/dist/extend.js"></script>
+   <script type="text/javascript" src="../dist/angular-coq.js"></script>
+   <script type="text/javascript">
+      var app = angular.module('app', ['coq','ngResource']);
+
+      app.factory('TeamsModel', function($resource, Coq) {
+        return Coq.factory({
+           $resource : $resource('/teams/:id'),
+           $attributes : {
+             id   : 'number',
+             name : 'text'
+           }
+        });
+      });
+
+      app.controller('myController', function($scope, TeamsModel) {
+         $scope.team = new TeamsModel({ name : 'test', id : 1 });
+         $scope.team2 = new TeamsModel();
+      });
+   </script>
+</head>
+<body ng-app="app">
+  <div ng-controller="myController">
+  <h2>Edit a team</h2>
+
+    <form coq-model="team" ng-model="myForm"></form>
+
+    {{ team | json }}
+
+    <hr>
+
+    <h2>Create a team</h2>
+
+    <form coq-model="team2" ng-model="myForm" ng-submit="team2.save()">
+        <p>Name : <input coq-model-attribute="name"></p>
+
+        <input type="submit">
+    </form>
+  </div>
+</body>
+</html>
