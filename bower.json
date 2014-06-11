@@ -19,7 +19,8 @@
     "es5-shim": "~2.1.0",
     "angular-resource": "1.2.15",
     "angular-sanitize": "1.2.15",
-    "extend":""
+    "extend":"",
+    "jquery" : "2.x"
   },
   "devDependencies": {
     "angular-mocks": "1.2.15",
