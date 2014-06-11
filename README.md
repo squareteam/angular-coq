@@ -13,9 +13,6 @@ Angular models that make you say "cocoricoo"
 </table>
 
 
-#### The good parts
-
-- Working on top of ngResource
 
 ### [Beautiful API](https://github.com/squareteam/angular-coq/wiki/Coq-API)
 
