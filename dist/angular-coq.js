@@ -37,10 +37,6 @@ angular.module('coq').provider('Coq', function () {
   }
   // $conditionBuilder is customizable
   this.$conditionBuilder = conditionBuilder;
-  // this.$valueValidator = function(value) {
-  //   return  angular.isString(value) || angular.isNumber(value) ||
-  //           angular.isBoolean(value) || angular.isObject(value) || angular.isArray(value);
-  // };
   this.$get = [
     '$q',
     function ($q) {
@@ -51,7 +47,14 @@ angular.module('coq').provider('Coq', function () {
         ], RESERVED_STATICS = [
           'find',
           'all'
-        ], self = this;
+        ], CALLBACKS_JOINPOINTS = [
+          '$beforeSave',
+          '$afterSave',
+          '$beforeDestroy',
+          '$afterDestroy',
+          '$beforeUpdate',
+          '$afterUpdate'
+        ];
       // Parent class of all CoqModel
       //  Provide $attributes + CRUD method for current record
       function CoqModel(attributes) {
@@ -62,18 +65,29 @@ angular.module('coq').provider('Coq', function () {
             }
           }, this);
         }
-        this.save = function () {
-          return this.$resource.save(this.$toObject()).$promise;
-        };
-        this.destroy = function () {
-          return this.$resource['delete'](this.$toObject()).$promise;
-        };
+        // TODO : allow to create custom joinpoints
+        var actions = {
+            'save': 'save',
+            'destroy': 'delete'
+          };
         // $resource does not provide PUT action by default
         if (angular.isFunction(this.$resource.update)) {
-          this.update = function () {
-            return this.$resource.$update({}, this.$toObject()).$promise;
-          };
+          actions.update = 'update';
         }
+        function callResource(action) {
+          return this.$resource[action](this.$toObject()).$promise;
+        }
+        function callCallbacks(name, type) {
+          return $q.pipeline(this.callbacks['$' + type + name]);
+        }
+        angular.forEach(actions, function (action, name) {
+          var nameCapitalize = name[0].toUpperCase() + name.substr(1);
+          this[name] = function () {
+            var defer = $q.defer();
+            callCallbacks.call(this, nameCapitalize, 'before').then(angular.bind(this, callResource, action), defer.reject).then(angular.bind(this, callCallbacks, nameCapitalize, 'after'), defer.reject).then(defer.resolve, defer.reject);
+            return defer.promise;
+          };
+        }, this);
         this.$toObject = function () {
           var values = {};
           angular.forEach(this, function (value, key) {
@@ -149,11 +163,18 @@ angular.module('coq').provider('Coq', function () {
           ModelClass.superconstructor.apply(this, arguments);
         }
         extend(ModelClass, CoqModel);
+        var callbacksDefault = {};
+        angular.forEach(CALLBACKS_JOINPOINTS, function (callbackJoinpoint) {
+          callbacksDefault[callbackJoinpoint] = [];
+        });
+        ModelClass.prototype.callbacks = callbacksDefault;
         // augment model instance properties/methods
-        var addToPrototype = angular.copy(config);
+        var addToPrototype = {};
         angular.forEach(config, function (value, key) {
-          if (IGNORE_CONFIG_KEYS.indexOf(key) !== -1) {
-            delete addToPrototype[key];
+          if (CALLBACKS_JOINPOINTS.indexOf(key) !== -1) {
+            ModelClass.prototype.callbacks[key] = angular.isArray(value) ? value : [value];
+          } else if (IGNORE_CONFIG_KEYS.indexOf(key) === -1) {
+            addToPrototype[key] = value;
           }
         });
         angular.extend(ModelClass.prototype, addToPrototype);
@@ -183,6 +204,38 @@ angular.module('coq').provider('Coq', function () {
     }
   ];
 });
+'use strict';
+angular.module('coq').config([
+  '$provide',
+  function ($provide) {
+    $provide.decorator('$q', function ($delegate) {
+      $delegate.pipeline = function (tasks, defaultValue) {
+        var tasksLength = tasks.length;
+        if (tasksLength) {
+          return function () {
+            var defer = $delegate.defer();
+            function callTask(i, lastResult) {
+              $delegate.when(tasks[i](lastResult)).then(function (result) {
+                if (i + 1 < tasksLength) {
+                  callTask(i + 1, result);
+                } else {
+                  defer.resolve(result);
+                }
+              }, function (error) {
+                defer.reject(error);
+              });
+            }
+            callTask(0, defaultValue);
+            return defer.promise;
+          }();
+        } else {
+          return $delegate.when(defaultValue);
+        }
+      };
+      return $delegate;
+    });
+  }
+]);
 'use strict';
 angular.module('coq').service('coqModelFormInputs', function () {
   return {
@@ -268,7 +321,7 @@ angular.module('coq').directive('coqModel', [
           coqModelController.init(attrs);
           if (element[0].tagName === 'FORM' && !$(element).find('input[coq-model-attribute]').length) {
             var paragraph, input, paragraphs = [];
-            angular.forEach(coqModelController.coqModel.$attributesDefinition, function (type, name) {
+            angular.forEach(coqModelController.coqModel.$attributesDefinition, function (_, name) {
               paragraph = document.createElement('p');
               input = document.createElement('input');
               angular.element(input).attr('coq-model-attribute', name);

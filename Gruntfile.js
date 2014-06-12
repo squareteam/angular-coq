@@ -61,7 +61,7 @@ module.exports = function (grunt) {
 
     concat : {
       dist : {
-        src: ['<%= yeoman.lib %>/module.js', '<%= yeoman.lib %>/coq.js', '<%= yeoman.lib %>/directives/coq-form-services.js', '<%= yeoman.lib %>/directives/coq-model-attribute.js', '<%= yeoman.lib %>/directives/coq-model.js'],
+        src: ['<%= yeoman.lib %>/module.js', '<%= yeoman.lib %>/coq.js', '<%= yeoman.lib %>/q/pipeline.js', '<%= yeoman.lib %>/directives/coq-form-services.js', '<%= yeoman.lib %>/directives/coq-model-attribute.js', '<%= yeoman.lib %>/directives/coq-model.js'],
         dest: '.tmp/angular-coq.js',
       }
     },
