@@ -283,10 +283,14 @@ angular.module('coq').directive('coqModel', [
             }
             $compile(element.contents())(scope);
             paragraphs = null;
+          } else {
+            element.addClass('coq-clean');
           }
         },
         post: function (scope, iElement) {
-          $compile(iElement.contents())(scope);
+          if (!$(iElement).hasClass('coq-clean')) {
+            $compile(iElement.contents())(scope);
+          }
         }
       }
     };
