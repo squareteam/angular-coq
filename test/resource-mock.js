@@ -12,6 +12,12 @@ function getResourceMock () {
 
 (function() {
 
+  ResourceMock.prototype.addCustomMethod = function(method) {
+    ResourceMock.prototype[method] = function(params, cb, errb) {
+      return angular.isFunction(params) ? this.behavior.call(this, params, cb) : this.behavior.call(this, cb, errb);
+    };
+  };
+
   ResourceMock.prototype.shouldSucceed = function() {
     this.behavior = function(cb) {
       cb();
