@@ -208,8 +208,8 @@ angular.module('coq').provider('coqModelForm', function () {
         angular.extend(inputsDefinitions, $injector.get(module));
       });
       return {
-        getInputAttributes: function (type) {
-          return inputsDefinitions[type] || {};
+        getInputAttributes: function (inputConfig) {
+          return angular.isString(inputConfig) ? inputsDefinitions[inputConfig] || {} : inputConfig;
         }
       };
     }
@@ -230,9 +230,9 @@ angular.module('coq').directive('coqModelAttribute', [
           $log.error('coq-model-attribute need a parent element with coq-model directive');
           return;
         }
-        var type = coqModelController.coqModel.$attributesDefinition[attrs.coqModelAttribute] || false;
-        if (type) {
-          element.attr(coqModelForm.getInputAttributes(type));
+        var inputConfig = coqModelController.coqModel.$attributesDefinition[attrs.coqModelAttribute] || false;
+        if (inputConfig) {
+          element.attr(coqModelForm.getInputAttributes(inputConfig));
           element.attr('ng-model', coqModelController.coqModelName + '.' + attrs.coqModelAttribute);
         }
       }

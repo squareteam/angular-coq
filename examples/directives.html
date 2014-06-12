@@ -14,11 +14,15 @@
 
       app.factory('TeamsModel', function($resource, Coq) {
         return Coq.factory({
-           $resource : $resource('/teams/:id'),
-           $attributes : {
-             id   : 'number',
-             name : 'text'
-           }
+          $resource : $resource('/teams/:id'),
+          $attributes : {
+            id   : 'number',
+            name : {
+              type      : "text",
+              required  : "required",
+              maxlength : 10
+            }
+          }
         });
       });
 
