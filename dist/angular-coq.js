@@ -313,7 +313,7 @@ angular.module('coq').directive('coqModel', [
   '$compile',
   function ($compile) {
     return {
-      priority: 102,
+      terminal: true,
       controller: 'coqModelController',
       restrict: 'A',
       link: {
@@ -336,14 +336,10 @@ angular.module('coq').directive('coqModel', [
             }
             $compile(element.contents())(scope);
             paragraphs = null;
-          } else {
-            element.addClass('coq-clean');
           }
         },
         post: function (scope, iElement) {
-          if (!$(iElement).hasClass('coq-clean')) {
-            $compile(iElement.contents())(scope);
-          }
+          $compile(iElement.contents())(scope);
         }
       }
     };
