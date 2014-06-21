@@ -28,7 +28,7 @@
 
       app.controller('myController', function($scope, TeamsModel) {
          $scope.team = new TeamsModel({ name : 'test', id : 1 });
-         $scope.team2 = new TeamsModel();
+         $scope.team2 = new TeamsModel({ name : 'charly' });
       });
    </script>
 </head>
@@ -38,17 +38,20 @@
 
     <form coq-model="team" ng-model="myForm"></form>
 
-    {{ team | json }}
+    team : {{ team | json }}
 
     <hr>
 
     <h2>Create a team</h2>
 
-    <form coq-model="team2" ng-model="myForm" ng-submit="team2.save()">
-        <p>Name : <input coq-model-attribute="name"></p>
+    <form coq-model="team2" ng-model="myForm2" ng-submit="team2.save()">
+        <p>Name : <input coq-model-attribute="name" ng-model="team2.name"></p>
 
         <input type="submit">
+        <a ng-click="team2.save()" href>click me</a>
     </form>
+
+    team2 : {{ team2 | json }}
   </div>
 </body>
 </html>

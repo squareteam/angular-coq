@@ -45,7 +45,7 @@ describe('coq-model-attribute directive', function() {
     
     var input;
 
-    element = $compile('<form coq-model="user"><input coq-model-attribute="name"></form>')(scope);
+    element = $compile('<form coq-model="user"><input coq-model-attribute="name" ng-model="user.name"></form>')(scope);
 
     input = element.find('input');
 
