@@ -275,7 +275,7 @@ angular.module('coq').directive('coqModelAttribute', [
   'coqModelForm',
   function ($compile, $log, coqModelForm) {
     return {
-      priority: 101,
+      priority: 999,
       require: '?^coqModel',
       restrict: 'A',
       link: function (scope, element, attrs, coqModelController) {
@@ -286,7 +286,6 @@ angular.module('coq').directive('coqModelAttribute', [
         var inputConfig = coqModelController.coqModel.$attributesDefinition[attrs.coqModelAttribute] || false;
         if (inputConfig) {
           element.attr(coqModelForm.getInputAttributes(inputConfig));
-          element.attr('ng-model', coqModelController.coqModelName + '.' + attrs.coqModelAttribute);
         }
       }
     };
@@ -313,34 +312,37 @@ angular.module('coq').directive('coqModel', [
   '$compile',
   function ($compile) {
     return {
-      terminal: true,
+      priority: 1000,
       controller: 'coqModelController',
       restrict: 'A',
-      link: {
-        pre: function (scope, element, attrs, coqModelController) {
-          coqModelController.init(attrs);
-          if (element[0].tagName === 'FORM' && !$(element).find('input[coq-model-attribute]').length) {
-            var paragraph, input, paragraphs = [];
-            angular.forEach(coqModelController.coqModel.$attributesDefinition, function (_, name) {
-              paragraph = document.createElement('p');
-              input = document.createElement('input');
-              angular.element(input).attr('coq-model-attribute', name);
-              angular.element(paragraph).append(input);
-              paragraphs.push(paragraph);
-            });
-            if (coqModelController.insertMode === 'replace') {
-              element.empty();
-              element.append(paragraphs);
-            } else {
-              element[coqModelController.insertMode](paragraphs);
+      compile: function () {
+        return {
+          pre: function (scope, element, attrs, coqModelController) {
+            coqModelController.init(attrs);
+          },
+          post: function (scope, element, attrs, coqModelController) {
+            if (element[0].tagName === 'FORM' && !$(element).find('input[coq-model-attribute]').length) {
+              var paragraph, input, paragraphs = [];
+              angular.forEach(coqModelController.coqModel.$attributesDefinition, function (_, name) {
+                paragraph = document.createElement('p');
+                input = document.createElement('input');
+                angular.element(input).attr('coq-model-attribute', name);
+                angular.element(input).attr('ng-model', coqModelController.coqModelName + '.' + name);
+                angular.element(paragraph).append(input);
+                paragraphs.push(paragraph);
+              });
+              if (coqModelController.insertMode === 'replace') {
+                element.empty();
+                element.append(paragraphs);
+              } else {
+                element[coqModelController.insertMode](paragraphs);
+              }
+              $compile(element.contents())(scope);
+              $compile(element.contents())(scope);
+              paragraphs = null;
             }
-            $compile(element.contents())(scope);
-            paragraphs = null;
           }
-        },
-        post: function (scope, iElement) {
-          $compile(iElement.contents())(scope);
-        }
+        };
       }
     };
   }
