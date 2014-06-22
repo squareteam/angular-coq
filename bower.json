@@ -11,7 +11,7 @@
   },
   "licence" : "MIT",
   "keywords" : ["angular", "model", "resource"],
-  "version": "0.0.5",
+  "version": "0.0.6",
   "main": "./dist/angular-coq.js",
   "dependencies": {
     "angular": "1.2.15",
